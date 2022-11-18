@@ -1,0 +1,2 @@
+C:\Users\Дмитрий\source\repos\Web.UI\Web.UI\obj\Debug\web.ui.esproj.SuggestedBindingRedirects.cache
+C:\Users\Дмитрий\source\repos\Web.UI\Web.UI\obj\Debug\web.ui.esproj.CoreCompileInputs.cache
