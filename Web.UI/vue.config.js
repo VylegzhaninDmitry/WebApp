@@ -29,5 +29,16 @@ module.exports = {
             }
         },
         port: 5002
-    }
+    },
+    configureWebpack: {
+        module: {
+            rules: [
+                {
+                    test: /\.scss$/,
+                    use: [
+                    ]
+                }
+            ]
+        }
+    },
 }
