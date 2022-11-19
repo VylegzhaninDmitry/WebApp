@@ -10,7 +10,7 @@
         public int TotalRecords { get; set; }
         public Uri NextPage { get; set; }
         public Uri PreviousPage { get; set; }
-        public PagedResponse(T data, int pageNumber, int pageSize)
+        public PagedResponse(T data, int pageNumber, int pageSize, int totalRecord)
         {
             this.PageNumber = pageNumber;
             this.PageSize = pageSize;
@@ -18,6 +18,8 @@
             this.Message = null;
             this.Succeeded = true;
             this.Errors = null;
+            this.TotalRecords = totalRecord;
+            this.TotalPages = totalRecord / pageSize;
         }
     }
 }

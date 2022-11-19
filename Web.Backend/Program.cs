@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MySqlConnector;
+using System.Security.Claims;
 using System.Text;
 using Web.Backend.Controllers;
 using Web.Backend.Data;
@@ -15,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
+
 
 builder.Services.AddSwaggerGen(options =>
 {
