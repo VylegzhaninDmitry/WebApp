@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Extensions;
-using Newtonsoft.Json.Linq;
-using NuGet.Common;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -22,7 +17,7 @@ namespace Web.Backend.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IConfiguration _config;
-        private readonly ILogger<LoginController> _logger;   
+        private readonly ILogger<LoginController> _logger;
         private readonly DataContext _dataContext;
 
         public LoginController(IConfiguration config, ILogger<LoginController> logger, DataContext dataContext)
@@ -36,15 +31,15 @@ namespace Web.Backend.Controllers
         [AllowAnonymous]
         public IActionResult Register(UserLogin userLogin)
         {
-            var(passwordHash, passwordSalt) = GetNewPassword(userLogin.Password);
-
+            var (passwordHash, passwordSalt) = GetNewPassword(userLogin.Password);
+            //todo return change without hash salt
             var user = new User
             {
                 Login = userLogin.Username,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Role = Roles.User.ToString()
-        };
+                Role = Roles.UnauthorizedUser.ToString()
+            };
 
             _dataContext.Add(user);
             _dataContext.SaveChanges();
@@ -53,37 +48,36 @@ namespace Web.Backend.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
+        [HttpPost("Login")]
         public IActionResult Login([FromBody] UserLogin userLogin)
         {
-             var user = Authenticate(userLogin);
+            var user = Authenticate(userLogin);
 
-            if(user == null) 
-            {
+            if (user == null)
                 return NotFound("User not found!");
-            }
 
-            if (!VerifyPasswordHash(userLogin.Password, user.PasswordSalt,user.PasswordHash))
-            {
+            if (!VerifyPasswordHash(userLogin.Password, user.PasswordSalt, user.PasswordHash))
                 return BadRequest("Wrong password!");
-            }
-                
+
+            if (user.Role == Roles.UnauthorizedUser.ToString())
+                return BadRequest("You are not an authorized user yet!");
+
             var token = Generate(user);
             return Ok(token);
-            
+
         }
 
         private string Generate(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credential =  new SigningCredentials(securityKey,SecurityAlgorithms.HmacSha256);
+            var credential = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Login),
                 new Claim(ClaimTypes.Role, user.Role),
             };
-            
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"], _config["Jwt:Audience"],claims,expires: DateTime.Now.AddMinutes(15), signingCredentials:credential);
+
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"], _config["Jwt:Audience"], claims, expires: DateTime.Now.AddMinutes(15), signingCredentials: credential);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
