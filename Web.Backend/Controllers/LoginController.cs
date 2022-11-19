@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
+using Newtonsoft.Json.Linq;
 using NuGet.Common;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,6 +12,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Web.Backend.Data;
+using Web.Backend.Enums;
 using Web.Backend.Models;
 
 namespace Web.Backend.Controllers
@@ -39,8 +42,9 @@ namespace Web.Backend.Controllers
             {
                 Login = userLogin.Username,
                 PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt
-            };
+                PasswordSalt = passwordSalt,
+                Role = Roles.User.ToString()
+        };
 
             _dataContext.Add(user);
             _dataContext.SaveChanges();
@@ -59,7 +63,7 @@ namespace Web.Backend.Controllers
                 return NotFound("User not found!");
             }
 
-            if (!VerifyPasswordHash(userLogin.Password, user.PasswordSalt))
+            if (!VerifyPasswordHash(userLogin.Password, user.PasswordSalt,user.PasswordHash))
             {
                 return BadRequest("Wrong password!");
             }
@@ -118,10 +122,10 @@ namespace Web.Backend.Controllers
         }
 
 
-        private bool VerifyPasswordHash(string password, string passwordSalt)
+        private bool VerifyPasswordHash(string password, string passwordSalt, string passwordHash)
         {
             var providedHashed = HashPassword(password, Convert.FromBase64String(passwordSalt));
-            return string.Equals(password, providedHashed, StringComparison.Ordinal);
+            return string.Equals(passwordHash, providedHashed, StringComparison.Ordinal);
         }
     }
 }
