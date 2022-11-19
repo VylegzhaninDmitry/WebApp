@@ -9,12 +9,12 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-4 col-md-6 col-sm-8 mx-auto">
-                        <div v-if="!registerActive" class="card login" v-bind:class="{ error: emptyFields }">
+                        <div v-if="!registerActive" class="card login" :class="{ error: emptyFields }">
                             <h1>Войти</h1>
                             <div class="form-group">
                                 <input v-model="emailLogin" type="email" class="form-control" placeholder="Email" required>
                                 <input v-model="passwordLogin" type="password" class="form-control" placeholder="Пароль" required>
-                                <input type="submit" class="btn btn-primary" @click="doLogin">
+                                <input type="submit" class="btn btn-primary" @click="login">
                                 <p>
                                     Нет аккаунта? <a href="#" @click="registerActive = !registerActive, emptyFields = false">Зарегистрироваться</a>
                                 </p>
@@ -22,13 +22,13 @@
                             </div>
                         </div>
 
-                        <div v-else class="card register" v-bind:class="{ error: emptyFields }">
+                        <div v-else class="card register" :class="{ error: emptyFields }">
                             <h1>Зарегистрироваться</h1>
                             <form class="form-group">
                                 <input v-model="emailReg" type="email" class="form-control" placeholder="Email" required>
-                                <input v-model="passwordReg" type="password" class="form-control" placeholder="Password" required>
-                                <input v-model="confirmReg" type="password" class="form-control" placeholder="Confirm Password" required>
-                                <input type="submit" class="btn btn-primary" @click="doRegister">
+                                <input v-model="passwordReg" type="password" class="form-control" placeholder="Пароль" required>
+                                <input v-model="confirmReg" type="password" class="form-control" placeholder="Подтвердите пароль" required>
+                                <input class="btn btn-primary" @click="register">
                                 <p>
                                     Уже есть аккаунт? <a href="#" @click="registerActive = !registerActive, emptyFields = false">Войти</a>
                                 </p>
@@ -43,6 +43,7 @@
 </template>
 
 <script>
+    import { ApiClient } from '@/clients/api/api-client.js'
     export default {
         name: 'LoginPage',
         data() {
@@ -58,19 +59,26 @@
         },
 
         methods: {
-            doLogin() {
+            login() {
                 if (this.emailLogin === "" || this.passwordLogin === "") {
                     this.emptyFields = true;
                 } else {
-                    alert("You are now logged in");
+                    ApiClient.login({ userName: this.emailLogin, password: this.passwordLogin })
+                        .then((response) => {
+                            if (response.status === 200) {
+                                this.$store.dispatch('authorize', response.data)
+                            }
+                        })
+                    //alert("You are now logged in");
                 }
             },
 
-            doRegister() {
-                if (this.emailReg === "" || this.passwordReg === "" || this.confirmReg === "") {
+            register() {
+                if (this.emailReg === "" || this.passwordReg === "" || this.confirmReg === "" || (this.passwordReg !== this.confirmReg)) {
                     this.emptyFields = true;
                 } else {
-                    alert("You are now registered");
+                    ApiClient.register({ userName: this.emailLogin, password: this.passwordLogin })
+                    //alert("You are now registered");
                 }
             }
         }
