@@ -1,4 +1,13 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+import { BootstrapVue } from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import './assets/styles/login.scss'
+ 
+Vue.use(BootstrapVue)
+new Vue({
+    el: '#app',
+    render: h => h(App)
+})
