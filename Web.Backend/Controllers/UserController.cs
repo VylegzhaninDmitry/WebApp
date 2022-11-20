@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Web.Backend.Data;
 using Web.Backend.Models;
 
 namespace Web.Backend.Controllers
@@ -11,6 +12,13 @@ namespace Web.Backend.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly DataContext _dataContext;
+
+        public UserController(DataContext dataContext)
+        {
+            _dataContext = dataContext;
+        }
+
         [HttpGet("Admins")]
         [Authorize(Roles = "Administrator")]
         public IActionResult AdminsEndpoint()
@@ -32,6 +40,16 @@ namespace Web.Backend.Controllers
         public IActionResult PublicEndpoint()
         {
             return Ok("Public");
+        }
+
+        [HttpGet("GetUser")]
+        public async Task<IActionResult> GetUser(int userId)
+        {
+            var user = await _dataContext.Users.FindAsync(userId);
+            if (user == null) 
+                return NotFound("User not found");
+
+            return Ok(user);
         }
 
         private User GetCurrentUser()

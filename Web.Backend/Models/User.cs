@@ -9,7 +9,9 @@
         public string Role { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public bool EmailConfirmed { get; set; }
-        public bool PasswordConfirmed { get; set; }
+        public bool IsVerified { get; set; }
+        public bool IsBlocked { get; set; }
+        public decimal Balance { get; set; }
+        public ICollection<Account> Accounts { get; set; }
     }
 }

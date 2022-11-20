@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
