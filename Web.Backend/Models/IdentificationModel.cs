@@ -2,5 +2,6 @@
 {
     public class IdentificationModel
     {
+        public int Id { get; set; }
     }
 }

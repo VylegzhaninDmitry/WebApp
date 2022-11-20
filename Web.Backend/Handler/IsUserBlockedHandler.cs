@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using Web.Backend.Models;
 
 namespace Web.Backend.Handler
@@ -7,7 +8,7 @@ namespace Web.Backend.Handler
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsUserBlocked requirement)
         {
-            if (context.User.HasClaim(f => f.Type == "Blocked"))
+            if (context.User.HasClaim(f => f.Type == "IsBlocked"))
             {
                 context.Fail();
             }

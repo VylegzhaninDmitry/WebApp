@@ -47,7 +47,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("IsBlocked", policy => policy.AddRequirements(new IsUserBlocked()));
+    options.AddPolicy("IsBlocked", policy => policy.AddRequirements(new IsUserBlocked(true)));
 });
 builder.Services.AddAuthentication(options =>
 {

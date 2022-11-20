@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -31,7 +32,12 @@ namespace Web.Backend.Controllers
         [AllowAnonymous]
         public IActionResult Register(UserLogin userLogin)
         {
+            if (IsExistUser(userLogin.Email))
+                return BadRequest("User is exist");
+
             var (passwordHash, passwordSalt) = GetNewPassword(userLogin.Password);
+
+
             //todo return change without hash salt
             var user = new User
             {
@@ -46,7 +52,7 @@ namespace Web.Backend.Controllers
             _dataContext.Add(user);
             _dataContext.SaveChanges();
 
-            return Ok(user);
+            return Ok();
         }
 
         [AllowAnonymous]
@@ -62,7 +68,7 @@ namespace Web.Backend.Controllers
                 return BadRequest("Wrong password!");
 
             if (user.Role == Roles.UnauthorizedUser.ToString())
-                return BadRequest("You are not an authorized user yet!");
+                return Unauthorized("You are not an authorized user yet!");
 
             var token = Generate(user);
             return Ok(token);
@@ -75,8 +81,9 @@ namespace Web.Backend.Controllers
             var credential = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Login),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(type:"IsBlocked",value: user.IsBlocked.ToString())
             };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"], _config["Jwt:Audience"], claims, expires: DateTime.Now.AddMinutes(15), signingCredentials: credential);
@@ -122,6 +129,16 @@ namespace Web.Backend.Controllers
         {
             var providedHashed = HashPassword(password, Convert.FromBase64String(passwordSalt));
             return string.Equals(passwordHash, providedHashed, StringComparison.Ordinal);
+        }
+
+        private bool IsExistUser(string email)
+        {
+            var user = _dataContext.Users.FirstOrDefaultAsync(i=>i.Email== email);
+            if (user == null)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
