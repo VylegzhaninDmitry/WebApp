@@ -10,7 +10,7 @@
             </tr>
         </thead>
         <tbody>
-            <user-item v-for="user in users" :user="user" :key="user.id" />
+            <user-item v-for="user in users" :user="user" :key="user.id" @update="user = $event"/>
         </tbody>
     </table>
 </template>

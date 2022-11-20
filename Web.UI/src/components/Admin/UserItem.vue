@@ -4,14 +4,14 @@
         <td>{{ user.name }}</td>
         <td>{{ user.email }}</td>
         <td>
-            <b-button v-if="user.verified === false" class="action-button" style="width:100%" variant="success" size="sm" @click="verifyUser">
+            <b-button v-if="user.isVerified === false" class="action-button" style="width:100%" variant="success" size="sm" @click="verifyUser">
                 Подтвердить
             </b-button>
             <b-icon v-else :icon="verifiedIcon"></b-icon>
         </td>
         <td>
             <b-button class="action-button" style="width:100%" size="sm"
-                      :variant="user.blocked ? 'success' : 'danger'"
+                      :variant="user.isBlocked ? 'success' : 'danger'"
                       @click="blockUser">
                 {{user.blocked ? 'Разблокировать' : 'Заблокировать'}}
             </b-button>
@@ -31,19 +31,27 @@
 
         computed: {
             verifiedIcon() {
-                return this.user.verified ? 'patch-check' : 'exclamation-triangle'
+                return this.user.isVerified ? 'patch-check' : 'exclamation-triangle'
             },
             blockedIcon() {
-                return this.user.blocked ? 'lock' : 'unlock'
+                return this.user.isBlocked ? 'lock' : 'unlock'
             }
         },
 
         methods: {
             blockUser() {
-                ApiClient.blockUser(this.user.id)
+                ApiClient.blockUser(this.user.id).then((response) => {
+                    if (response.status === 200) {
+                        this.$emit('update', { ...this.user, isBlocked: !this.user.isBlocked })
+                    }
+                })
             },
             verifyUser() {
-                ApiClient.verifyUser(this.user.id)
+                ApiClient.verifyUser(this.user.id).then((response) => {
+                    if (response.status === 200) {
+                        this.$emit('update', { ...this.user, isVerified: true })
+                    }
+                })
             }
         }
     }

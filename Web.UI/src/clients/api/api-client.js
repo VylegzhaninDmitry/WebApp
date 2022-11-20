@@ -35,15 +35,19 @@ export class ApiClient {
     }
 
     static blockUser(id) {
-        return this.post('api/', { id })
+        return this.post('api/Admin/BlockUser', { id } , {
+            headers: this.getAuthHeaders()
+        })
     }
 
     static verifyUser(id) {
-        return this.post('api/', { id })
+        return this.post('api/Admin/VerifyUser', { id }, {
+            headers: this.getAuthHeaders()
+        })
     }
 
     static getAllUsers({ pageNumber, pageSize }) {
-        return this.get(`api/Admin/GetAllUsers?PageNumber=${pageNumber}&${pageSize}=100`, {
+        return this.get(`api/Admin/GetAllUsers?PageNumber=${pageNumber}&PageSize=${pageSize}`, {
             headers: this.getAuthHeaders()
         })
     }
