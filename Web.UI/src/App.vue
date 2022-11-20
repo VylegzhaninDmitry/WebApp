@@ -1,20 +1,36 @@
 <template>
     <div>
-         <login-page></login-page>
+        <component :is="viewComponent"></component>
     </div>
 </template>
 
 <script>
-import LoginPage from './components/Login/LoginPage.vue'
+    import LoginPage from '@/components/Login/LoginPage'
+    import UsersList from '@/components/Admin/UsersList'
 
-export default {
-  name: 'App',
-  components: {
-      LoginPage
-  }
-}
+    const routes = {
+        '/': LoginPage,
+        '/users': UsersList
+    }
+    export default {
+        name: 'App',
+        components: {
+            LoginPage,
+            UsersList
+        },
+
+        data: () => ({
+            currentRoute: window.location.pathname
+        }),
+
+        computed: {
+            viewComponent() {
+                return routes[this.currentRoute] || LoginPage
+            }
+        },
+
+    }
 </script>
 
 <style>
-
 </style>

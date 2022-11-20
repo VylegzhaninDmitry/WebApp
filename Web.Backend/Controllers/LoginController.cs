@@ -49,8 +49,8 @@ namespace Web.Backend.Controllers
             return Ok(user);
         }
 
-        [Authorize(Policy = "IsBlocked")]
-        [HttpPost("SignIn")]
+        [AllowAnonymous]
+        [HttpPost]
         public IActionResult Login([FromBody] UserLogin userLogin)
         {
             var user = Authenticate(userLogin);

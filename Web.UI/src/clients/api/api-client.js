@@ -34,10 +34,25 @@ export class ApiClient {
         })
     }
 
+    static blockUser(id) {
+        return this.post('api/', { id })
+    }
+
+    static verifyUser(id) {
+        return this.post('api/', { id })
+    }
+
+    static getAllUsers({ pageNumber, pageSize }) {
+        return this.get(`api/Admin/GetAllUsers?PageNumber=${pageNumber}&${pageSize}=100`, {
+            headers: this.getAuthHeaders()
+        })
+    }
+
     static register(data) {
         return this.post('api/Login/Register', {
-            headers: this.getAuthHeaders(),
             ...data
+        }, {
+            headers: this.getAuthHeaders()
         })
     }
 
@@ -46,11 +61,7 @@ export class ApiClient {
             .get(url, config)
             .catch(async error => {
                 let response = error.response
-                if (await this.shouldRedoRequest(response.status, config)) {
-                    config.headers.Authorization = this.getBearerToken()
-                    response = await this.axios()
-                        .get(this.getUrl(url), config)
-                }
+                console.log(error)
 
                 return response
             })
@@ -61,11 +72,6 @@ export class ApiClient {
             .post(url, data, config)
             .catch(async error => {
                 let response = error.response
-                if (await this.shouldRedoRequest(error.response.status, config)) {
-                    config.headers.Authorization = this.getBearerToken()
-                    response = await this.axios()
-                        .post(this.getUrl(url), data, config)
-                }
 
                 return response
             })
