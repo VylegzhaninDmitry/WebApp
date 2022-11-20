@@ -89,7 +89,7 @@
                 if (this.emailLogin === "" || this.passwordLogin === "") {
                     this.emptyFields = true;
                 } else {
-                    ApiClient.login({ userName: this.emailLogin, password: this.passwordLogin })
+                    ApiClient.login({ email: this.emailLogin, password: this.passwordLogin })
                         .then((response) => {
                             if (response.status === 200) {
                                 this.$store.dispatch('authorize', response.data)
@@ -97,6 +97,10 @@
 
                             if (response.status === 404) {
                                 this.errorMessage = "Неверный логин или пароль."
+                            }
+
+                            if (response.status === 401) {
+                                this.errorMessage = 'Вы ещё не авторизованы администартором'
                             }
                         })
                 }
@@ -108,7 +112,7 @@
                     this.errorMessage = passwordsNotMatch ? "Пароли не совпадают" : 'Заполните все поля'
                     this.emptyFields = true;
                 } else {
-                    ApiClient.register({ userName: this.emailReg, password: this.passwordReg })
+                    ApiClient.register({ email: this.emailReg, password: this.passwordReg })
                         .then((response) => {
                             if (response.status === 200) {
                                 this.registerActive = false

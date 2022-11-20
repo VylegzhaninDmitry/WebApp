@@ -7,10 +7,12 @@
 <script>
     import LoginPage from '@/components/Login/LoginPage'
     import UsersList from '@/components/Admin/UsersList'
+    import MainPage from '@/components/Main/MainPage'
 
     const routes = {
-        '/': LoginPage,
-        '/users': UsersList
+        '/login': LoginPage,
+        '/users': UsersList,
+        '/main': MainPage
     }
     export default {
         name: 'App',
