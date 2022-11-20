@@ -1,8 +1,7 @@
 ﻿namespace Web.Backend.Models
 {
-    public class Account
+    public class Account : IdentificationModel
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public decimal Balance { get; set; }
         public string Currency { get; set; }

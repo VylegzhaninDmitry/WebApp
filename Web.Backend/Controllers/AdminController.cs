@@ -16,13 +16,11 @@ namespace Web.Backend.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly DataContext _dataContext;
 
-        public AdminController(DataContext dataContext, UserManager<IdentityUser> userManager)
+        public AdminController(DataContext dataContext)
         {
             _dataContext = dataContext;
-            _userManager = userManager;
         }
 
         [HttpGet("GetAllUsers")]
@@ -38,27 +36,19 @@ namespace Web.Backend.Controllers
         }
 
         [HttpPost("BlockUser")]
-        public async Task<IActionResult> BlockUser([FromBody] int id)
+        public async Task<IActionResult> BlockUser([FromQuery] int id)
         {
             var user = await _dataContext.Users.FindAsync(id);
             if(user == null)
                 return NotFound("User not found");
 
-            var userTask = _userManager.FindByIdAsync(id.ToString());
-            userTask.Wait();
-            var userMang = userTask.Result;
-
-            var lockUserTask = _userManager.SetLockoutEnabledAsync(userMang, true);
-            lockUserTask.Wait();
-
             user.IsBlocked = !user.IsBlocked;
-            _dataContext.Users.Add(user);
             _dataContext.SaveChanges();
             return Ok();
         }
 
-        [HttpPost("VerifiedUser")]
-        public async Task<IActionResult> VerifiedUser([FromBody] int id)
+        [HttpPost("VerifyUser")]
+        public async Task<IActionResult> VerifyUser([FromQuery] int id)
         {
             var user = await _dataContext.Users.FindAsync(id);
 
@@ -66,7 +56,6 @@ namespace Web.Backend.Controllers
                 return NotFound("User not found");
 
             user.IsVerified = !user.IsVerified;
-            _dataContext.Users.Add(user);
             _dataContext.SaveChanges();
             return Ok();
         }
