@@ -62,7 +62,7 @@ namespace Web.Backend.Controllers
                 return BadRequest("Wrong password!");
 
             if (user.Role == Roles.UnauthorizedUser.ToString())
-                return BadRequest("You are not an authorized user yet!");
+                return Unauthorized("You are not an authorized user yet!");
 
             var token = Generate(user);
             return Ok(token);
@@ -75,8 +75,9 @@ namespace Web.Backend.Controllers
             var credential = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Login),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(type:"IsBlocked",value: user.IsBlocked.ToString())
             };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"], _config["Jwt:Audience"], claims, expires: DateTime.Now.AddMinutes(15), signingCredentials: credential);

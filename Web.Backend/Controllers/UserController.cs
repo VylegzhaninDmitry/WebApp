@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Web.Backend.Data;
 using Web.Backend.Models;
@@ -35,6 +36,7 @@ namespace Web.Backend.Controllers
             return Ok($"Hi, {currentUser.Login}, you role is {currentUser.Role}");
         }
 
+        [Authorize(Policy = "IsBlocked")]
         [HttpGet("Public")]
 
         public IActionResult PublicEndpoint()
@@ -43,9 +45,10 @@ namespace Web.Backend.Controllers
         }
 
         [HttpGet("GetUser")]
-        public async Task<IActionResult> GetUser(int userId)
+        public async Task<IActionResult> GetUser()
         {
-            var user = await _dataContext.Users.FindAsync(userId);
+            var currentUser = GetCurrentUser();
+            var user = await _dataContext.Users.FirstOrDefaultAsync(i=>i.Email == currentUser.Email);
             if (user == null) 
                 return NotFound("User not found");
 
@@ -62,7 +65,7 @@ namespace Web.Backend.Controllers
 
                 return new User
                 {
-                    Login = user.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value!,
+                    Email = user.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value!,
                     Role = user.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value!
                 };
             }

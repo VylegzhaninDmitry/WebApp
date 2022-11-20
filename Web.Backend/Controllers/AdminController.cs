@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Backend.Data;
-using Web.Backend.Enums;
 using Web.Backend.Filter;
 using Web.Backend.Models;
 using Web.Backend.Wrapper;
@@ -36,9 +33,9 @@ namespace Web.Backend.Controllers
         }
 
         [HttpPost("BlockUser")]
-        public async Task<IActionResult> BlockUser([FromQuery] int id)
+        public async Task<IActionResult> BlockUser([FromBody] IdentificationModel identificationModel)
         {
-            var user = await _dataContext.Users.FindAsync(id);
+            var user = await _dataContext.Users.FindAsync(identificationModel.Id);
             if(user == null)
                 return NotFound("User not found");
 
@@ -48,9 +45,9 @@ namespace Web.Backend.Controllers
         }
 
         [HttpPost("VerifyUser")]
-        public async Task<IActionResult> VerifyUser([FromQuery] int id)
+        public async Task<IActionResult> VerifyUser([FromBody] IdentificationModel identificationModel)
         {
-            var user = await _dataContext.Users.FindAsync(id);
+            var user = await _dataContext.Users.FindAsync(identificationModel.Id);
 
             if(user == null)
                 return NotFound("User not found");
