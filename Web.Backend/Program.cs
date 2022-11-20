@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using Web.Backend.Controllers;
 using Web.Backend.Data;
+using Web.Backend.Handler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +16,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 
-
+builder.Services.AddSingleton<IAuthorizationHandler,IsUserBlockedHandler>();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
@@ -41,6 +43,11 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsBlocked", policy => policy.AddRequirements(new IsUserBlocked()));
 });
 builder.Services.AddAuthentication(options =>
 {

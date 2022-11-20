@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using Web.Backend.Data;
 using Web.Backend.Models;
 
@@ -37,6 +36,7 @@ namespace Web.Backend.Controllers
         }
 
         [HttpGet("Public")]
+
         public IActionResult PublicEndpoint()
         {
             return Ok("Public");

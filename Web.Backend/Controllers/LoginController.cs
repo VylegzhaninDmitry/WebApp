@@ -35,7 +35,7 @@ namespace Web.Backend.Controllers
             //todo return change without hash salt
             var user = new User
             {
-                Login = userLogin.Username,
+                Email = userLogin.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Role = Roles.UnauthorizedUser.ToString(),
@@ -86,7 +86,7 @@ namespace Web.Backend.Controllers
 
         private User Authenticate(UserLogin userLogin)
         {
-            var currentUser = _dataContext.Users.FirstOrDefault(u => u.Login.ToLower() == userLogin.Username.ToLower());
+            var currentUser = _dataContext.Users.FirstOrDefault(u => u.Email.ToLower() == userLogin.Email.ToLower());
 
             if (currentUser != null)
             {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Backend.Data;
@@ -17,9 +18,9 @@ namespace Web.Backend.Controllers
     {
         private readonly DataContext _dataContext;
 
-        public AdminController(DataContext dataContext) 
+        public AdminController(DataContext dataContext)
         {
-            _dataContext= dataContext;
+            _dataContext = dataContext;
         }
 
         [HttpGet("GetAllUsers")]
@@ -35,20 +36,19 @@ namespace Web.Backend.Controllers
         }
 
         [HttpPost("BlockUser")]
-        public async Task<IActionResult> BlockUser([FromBody] int id)
+        public async Task<IActionResult> BlockUser([FromQuery] int id)
         {
             var user = await _dataContext.Users.FindAsync(id);
             if(user == null)
                 return NotFound("User not found");
 
             user.IsBlocked = !user.IsBlocked;
-            _dataContext.Users.Add(user);
             _dataContext.SaveChanges();
             return Ok();
         }
 
-        [HttpPost("VerifiedUser")]
-        public async Task<IActionResult> VerifiedUser([FromBody] int id)
+        [HttpPost("VerifyUser")]
+        public async Task<IActionResult> VerifyUser([FromQuery] int id)
         {
             var user = await _dataContext.Users.FindAsync(id);
 
@@ -56,7 +56,6 @@ namespace Web.Backend.Controllers
                 return NotFound("User not found");
 
             user.IsVerified = !user.IsVerified;
-            _dataContext.Users.Add(user);
             _dataContext.SaveChanges();
             return Ok();
         }
