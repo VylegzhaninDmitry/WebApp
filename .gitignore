@@ -1,2 +1,4 @@
 DesignTimeBuild/
 v*/
+.vs
+obj
