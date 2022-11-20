@@ -1,14 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MySqlConnector;
-using System.Security.Claims;
 using System.Text;
 using Web.Backend.Controllers;
 using Web.Backend.Data;
-using Web.Backend.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 

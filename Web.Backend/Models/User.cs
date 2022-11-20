@@ -11,5 +11,7 @@
         public string Email { get; set; } = string.Empty;
         public bool IsVerified { get; set; }
         public bool IsBlocked { get; set; }
+        public decimal Balance { get; set; }
+        public ICollection<Account> Accounts { get; set; }
     }
 }

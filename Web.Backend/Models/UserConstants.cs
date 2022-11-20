@@ -9,14 +9,12 @@
                 Login = "admin",
                 Email = "admin@example.com",
                 Role = "Administrator",
-                PasswordConfirmed = true
             },
             new User()
             {
                 Login = "user",
                 Email = "user@example.com",
                 Role = "User",
-                PasswordConfirmed = true
             }
         };
     }
