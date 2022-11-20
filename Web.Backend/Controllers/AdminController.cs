@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Backend.Data;
@@ -15,11 +16,13 @@ namespace Web.Backend.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly DataContext _dataContext;
 
-        public AdminController(DataContext dataContext) 
+        public AdminController(DataContext dataContext, UserManager<IdentityUser> userManager)
         {
-            _dataContext= dataContext;
+            _dataContext = dataContext;
+            _userManager = userManager;
         }
 
         [HttpGet("GetAllUsers")]
@@ -40,6 +43,13 @@ namespace Web.Backend.Controllers
             var user = await _dataContext.Users.FindAsync(id);
             if(user == null)
                 return NotFound("User not found");
+
+            var userTask = _userManager.FindByIdAsync(id.ToString());
+            userTask.Wait();
+            var userMang = userTask.Result;
+
+            var lockUserTask = _userManager.SetLockoutEnabledAsync(userMang, true);
+            lockUserTask.Wait();
 
             user.IsBlocked = !user.IsBlocked;
             _dataContext.Users.Add(user);
